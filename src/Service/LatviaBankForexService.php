@@ -16,7 +16,7 @@ class LatviaBankForexService
         );
     }
 
-    public function getForexData()
+    public function getForexRates()
     {
         return empty($this->rates)
             ? $this->rates = $this->parseEntries()
