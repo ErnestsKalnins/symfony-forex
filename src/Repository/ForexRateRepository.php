@@ -19,6 +19,32 @@ class ForexRateRepository extends ServiceEntityRepository
         parent::__construct($registry, ForexRate::class);
     }
 
+    public function availableDates()
+    {
+        $dates = $this->createQueryBuilder('f')
+                    ->select('f.published_at')->distinct()
+                    ->orderBy('f.published_at', 'desc')
+                    ->getQuery()
+                    ->getResult();
+
+        $result = [];
+        foreach ($dates as $date)
+        {
+            array_push($result, $date["published_at"]);
+        }
+        return $result;
+    }
+
+    public function ratesAtDate($date)
+    {
+        return $this->createQueryBuilder('f')
+                    ->andWhere('f.published_at = :date')
+                    ->setParameter('date', $date->format('Y-m-d'))
+                    ->orderBy('f.currency', 'asc')
+                    ->getQuery()
+                    ->getResult();
+    }
+
     // /**
     //  * @return ForexRate[] Returns an array of ForexRate objects
     //  */

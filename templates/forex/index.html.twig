@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container">
+	<ul>
+	    {% for date in availableDates %}
+		<li>
+		    {{ date.format('d.m.Y') }}
+		</li>
+	    {% endfor %}
+	</ul>
+
+	<table class="table table-lg">
+	    <thead>
+		<tr>
+		    <th scope="col">Currency</th>
+		    <th scope="col" class="text-right">Rate</th>
+		</tr>
+	    </thead>
+	    <tbody>
+		{% for rate in forexRates %}
+		    <tr>
+			<th>{{ rate.currency }}</th>
+			<th class="text-right">{{ rate.rate|number_format(4, '.', ',') }}</th>
+		    </tr>
+		{% endfor %}
+	    </tbody>
+	</table>
+    </div>
+{% endblock %}

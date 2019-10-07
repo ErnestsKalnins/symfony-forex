@@ -6,9 +6,11 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\ForexRateRepository")
- * @ORM\Table(name="forex_rate", indexes={
- *   @ORM\Index(name="currency_rate_published_index", columns={"currency", "rate", "published_at"}),
- * })
+ * @ORM\Table(name="forex_rates",
+ *     uniqueConstraints={
+ *         @ORM\UniqueConstraint(name="unique_index", columns={"currency", "rate", "published_at"}),
+ *     }
+ * )
  */
 class ForexRate
 {
@@ -25,7 +27,7 @@ class ForexRate
     private $currency;
 
     /**
-     * @ORM\Column(type="decimal", precision=19, scale=4)
+     * @ORM\Column(type="decimal", precision=23, scale=8)
      */
     private $rate;
 
@@ -33,6 +35,13 @@ class ForexRate
      * @ORM\Column(type="datetimetz")
      */
     private $published_at;
+
+    public function __construct($rate)
+    {
+        $this->currency = $rate["currency"];
+        $this->rate = $rate["rate"];
+        $this->published_at = $rate["published_at"];
+    }
 
     public function getId(): ?int
     {

@@ -3,6 +3,7 @@
 namespace App\Command;
 
 use App\Entity\ForexRate;
+use App\Repository\ForexRateRepository;
 use App\Service\LatviaBankForexService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
@@ -16,11 +17,14 @@ class LoadForexData extends Command
 
     private $entityManager;
 
+    private $forexRepository;
+
     private $forexService;
 
-    public function __construct(EntityManagerInterface $entityManager, LatviaBankForexService $forexService)
+    public function __construct(EntityManagerInterface $entityManager, ForexRateRepository $forexRepository, LatviaBankForexService $forexService)
     {
         $this->entityManager = $entityManager;
+        $this->forexRepository = $forexRepository;
         $this->forexService = $forexService;
 
         parent::__construct();
@@ -38,27 +42,31 @@ class LoadForexData extends Command
 
         $rates = $this->forexService->getForexRates();
 
+        $persistCount = 0;
+
         $progressBar = new ProgressBar($output, count($rates));
 
-        foreach($rates as $rate)
+        foreach ($rates as $rate)
         {
-            $this->persistRate($rate);
+            if (! $this->forexRepository->findOneBy($rate))
+            {
+                $persistCount++;
+                $this->entityManager->persist( new ForexRate($rate) );
+            }
+
             $progressBar->advance();
         }
 
-        $this->entityManager->flush();
         $progressBar->finish();
-        $output->writeln("\tCompleted!");
+        $this->entityManager->flush();
+
+        $output->writeln($this->persistedEntryMessage($persistCount));
     }
 
-    private function persistRate($rateArr)
+    private function persistedEntryMessage($count)
     {
-        $rate = new ForexRate();
-        $rate
-            ->setCurrency($rateArr["currency"])
-            ->setRate($rateArr["rate"])
-            ->setPublishedAt($rateArr["published_at"]);
-
-        $this->entityManager->persist($rate);
+        return $count == 0
+            ? "\tNo new records to persist!"
+            : "\tPersisted ${count} new records.";
     }
 }
