@@ -30,16 +30,33 @@ class ForexRateRepository extends ServiceEntityRepository
         $result = [];
         foreach ($dates as $date)
         {
-            array_push($result, $date["published_at"]);
+            array_push($result, $date["published_at"]->format('Y-m-d H:i:s'));
         }
         return $result;
+    }
+
+    public function getQueryBuilder()
+    {
+        return $this->createQueryBuilder('f');
+    }
+
+    public function atDate($date, $queryBuilder = null)
+    {
+        if (is_null($queryBuilder))
+        {
+            $queryBuilder = $this->getQueryBuilder();
+        }
+
+        return $queryBuilder
+                    ->andWhere('f.published_at = :date')
+                    ->setParameter('date', $date);
     }
 
     public function ratesAtDate($date)
     {
         return $this->createQueryBuilder('f')
                     ->andWhere('f.published_at = :date')
-                    ->setParameter('date', $date->format('Y-m-d'))
+                    ->setParameter('date', $date)
                     ->orderBy('f.currency', 'asc')
                     ->getQuery()
                     ->getResult();

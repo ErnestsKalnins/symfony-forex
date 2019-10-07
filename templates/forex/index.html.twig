@@ -2,14 +2,14 @@
 
 {% block body %}
     <div class="container">
-	<ul>
-	    {% for date in availableDates %}
-		<li>
-		    {{ date|date('d.m.Y') }}
-		</li>
-	    {% endfor %}
-	</ul>
-
+	{# <ul>
+	     {% for date in availableDates %}
+	     <li>
+	     {{ date|date('d.m.Y') }}
+	     </li>
+	     {% endfor %}
+	     </ul>
+	#}
 	<table class="table table-lg">
 	    <thead>
 		<tr>
@@ -26,5 +26,6 @@
 		{% endfor %}
 	    </tbody>
 	</table>
+	{{ knp_pagination_render(forexRates) }}
     </div>
 {% endblock %}
