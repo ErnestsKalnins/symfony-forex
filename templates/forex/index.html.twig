@@ -2,14 +2,14 @@
 
 {% block body %}
     <div class="container">
-	{# <ul>
+	<ul class="list-inline">
 	     {% for date in availableDates %}
-	     <li>
-	     {{ date|date('d.m.Y') }}
-	     </li>
+		<li class="list-inline-item">
+		    <a href="{{ path('forex', {'page': forexRates.page, 'date': date}) }}">{{ date|date('d.m.Y') }}</a>
+		</li>
 	     {% endfor %}
 	     </ul>
-	#}
+
 	<table class="table table-lg">
 	    <thead>
 		<tr>

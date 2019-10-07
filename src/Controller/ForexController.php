@@ -18,9 +18,7 @@ class ForexController extends AbstractController
         $forexRepo = $this->getDoctrine()->getManager()->getRepository(ForexRate::class);
         $availableDates = $forexRepo->availableDates();
 
-        $selectedDate = $request->query->get('date') ?: $availableDates[0];
-
-        // $forexRates = $forexRepo->ratesAtDate($availableDates[0]);
+        $selectedDate = $request->query->get('date', $availableDates[0]);
 
         $forexRates = $paginator->paginate(
             $forexRepo->atDate($selectedDate),
@@ -31,7 +29,7 @@ class ForexController extends AbstractController
         $forexRates->setParam('date', $selectedDate);
 
         return $this->render('forex/index.html.twig', [
-            // 'availableDates' => $availableDates,
+            'availableDates' => $availableDates,
             'forexRates' => $forexRates,
         ]);
     }
